@@ -1,5 +1,5 @@
 # ── Frontend build stage (only used when USE_VITE_BUILD=true) ────
-FROM node:20-alpine AS frontend
+FROM node:22.23.4-alpine AS frontend
 WORKDIR /app/frontend
 COPY frontend/package*.json ./
 RUN npm install --no-audit --no-fund
@@ -7,13 +7,13 @@ COPY frontend/ ./
 RUN npm run build
 
 # ── Server deps stage ────────────────────────────────────────────
-FROM node:20-alpine AS deps
+FROM node:22.23.4-alpine AS deps
 WORKDIR /app
 COPY package*.json ./
 RUN npm install --omit=dev --no-audit --no-fund
 
 # ── Runtime stage ─────────────────────────────────────────────────
-FROM node:20-alpine
+FROM node:22.23.4-alpine
 WORKDIR /app
 
 # Chromium for Playwright (LinkedIn bot) + curl for healthcheck

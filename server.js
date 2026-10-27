@@ -524,7 +524,7 @@ app.delete('/api/forms/:slug', requireAuth, async (req, res) => {
 });
 
 // ── Jarvis API summary ───────────────────────────────────────────
-app.get('/api/summary', async (_req, res) => {
+app.get('/api/summary', requireAuth, async (_req, res) => {
   if (!DB_READY) return res.status(503).json({ error: 'Database not ready' });
   try {
     const [rows] = await pool.query('SELECT content FROM crm_summary WHERE id = 1');
@@ -1871,7 +1871,10 @@ app.get('/', (_req, res) => {
 if (VITE_ACTIVE) {
   app.use('/assets', express.static(path.join(VITE_ASSETS_DIR, 'assets'), { maxAge: '1y', immutable: true }));
 }
-app.use(express.static(__dirname, { index: false }));
+// Only explicitly public files may be served from the application directory.
+app.get('/logo.png', (_req, res) => {
+  res.sendFile(path.join(__dirname, 'logo.png'));
+});
 
 // ── Backup helper ────────────────────────────────────────────────
 // Backups are APPEND-ONLY. Each invocation creates a new row.
